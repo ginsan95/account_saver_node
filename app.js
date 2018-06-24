@@ -3,11 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+// db setup
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://test:test123@ds263660.mlab.com:63660/account-saver');
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
