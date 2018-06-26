@@ -65,9 +65,12 @@ exports.login = [
             const token = jwt.sign({id: user._id}, config.secret, {
                 expiresIn: 86400 // expires in 24 hours
             });
+            const {username, name} = user;
+
             res.json({
                 status: 'Success',
-                token
+                token,
+                user: {username, name}
             });
         })
         .catch(error => next(error));

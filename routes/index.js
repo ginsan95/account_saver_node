@@ -1,5 +1,5 @@
 const express = require('express');
-const authController = require('../controllers/AuthController');
+const restRouter = require('./rest')
 
 const router = express.Router();
 
@@ -8,8 +8,6 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
-router.post('/register', authController.register);
-
-router.post('/login', authController.login);
+router.use('/rest', restRouter);
 
 module.exports = router;
