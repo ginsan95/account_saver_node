@@ -11,8 +11,7 @@ const config = require('../config');
 exports.register = [
     check('username').isLength({min:4}).trim().withMessage('Username must be at least 4 characters.'),
     check('password').isLength({min:4}).trim().withMessage('Password must be at least 4 characters.'),
-    check('name').isLength({min:1}).trim().withMessage('Name must be specified.')
-        .isAlphanumeric().withMessage('Name has non-alphanumeric characters'),
+    check('name').isLength({min:1}).trim().withMessage('Name must be specified.'),
     sanitizeBody('*').trim().escape(),
     (req, res, next) => {
         new Promise((resolve, reject) => {
@@ -30,7 +29,7 @@ exports.register = [
         })
         .then(user => {
             res.json({
-                status: 'Success',
+                apiStatus: 'success',
                 userId: user._id
             })
         })
@@ -68,7 +67,7 @@ exports.login = [
             const {username, name} = user;
 
             res.json({
-                status: 'Success',
+                apiStatus: 'success',
                 token,
                 user: {username, name}
             });
