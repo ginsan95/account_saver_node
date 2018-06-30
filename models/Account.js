@@ -7,6 +7,7 @@ const accountSchema = Schema({
     username: {type: String, require: true},
     password: {type: String, require: true},
     updatedDate: {type: Date, default: Date.now, require: true},
+    owner: {type: Schema.ObjectId, ref:'User', require: true},
 
     email: {type: String, match: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/},
     phoneNumber: {type: String, match: /(^\+)?[0-9]/},
