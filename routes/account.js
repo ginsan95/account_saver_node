@@ -10,4 +10,8 @@ router.get('/', accountController.accounts);
 
 router.post('/new', accountController.createAccount);
 
+router.post('/update', accountController.updateAccount);
+
+router.post('/delete', accountController.deleteAccount);
+
 module.exports = router;

@@ -32,22 +32,14 @@ exports.changeName = [
             if (!error.isEmpty()) {
                 return next(new MyError(error));
             }
-            resolve(User.findById(req.userId).exec());
-        })
-        .then(user => {
+            const {name} = req.body;
+            resolve(User.findByIdAndUpdate(req.userId, {name}, {new: true}).exec());
+
+        }).then(user => {
             if (!user) {
                 throw {
                     status: 404,
                     message: 'User not found.'
-                }
-            }
-            const {name} = req.body;
-            return User.findByIdAndUpdate(req.userId, {name}, {new: true}).exec();
-        })
-        .then(user => {
-            if (!user) {
-                throw {
-                    message: 'Failed to update user\'s name'
                 }
             }
             user.password = undefined;
@@ -55,7 +47,7 @@ exports.changeName = [
                 apiStatus: 'success',
                 user
             })
-        })
-        .catch(error => next(error));
+
+        }).catch(error => next(error));
     }
 ];

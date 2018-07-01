@@ -4,6 +4,13 @@ const { sanitizeBody } = require('express-validator/filter');
 const Account = require('../models/Account');
 const MyError = require('../models/MyError');
 
+const accountVerifications = [
+    check('gameName').isLength({min:1}).withMessage('Game name must not be empty'),
+    check('username').isLength({min:1}).withMessage('Username must not be empty'),
+    check('password').isLength({min:1}).withMessage('Password must not be empty'),
+    check('email').optional({checkFalsy:true}).isEmail().withMessage('Invalid email'),
+    sanitizeBody("*").trim().escape()
+];
 
 exports.accounts = (req, res, next) => {
     new Promise((resolve, reject) => {
@@ -19,11 +26,7 @@ exports.accounts = (req, res, next) => {
 };
 
 exports.createAccount = [
-    check('gameName').isLength({min:1}).withMessage('Game name must not be empty'),
-    check('username').isLength({min:1}).withMessage('Username must not be empty'),
-    check('password').isLength({min:1}).withMessage('Password must not be empty'),
-    check('email').optional({checkFalsy:true}).isEmail().withMessage('Invalid email'),
-    sanitizeBody("*").trim().escape(),
+    ...accountVerifications,
     (req, res, next) => {
         new Promise((resolve, reject) => {
             const error = validationResult(req);
@@ -40,6 +43,63 @@ exports.createAccount = [
                 apiStatus: 'success',
                 account
             })
+
+        }).catch(error => next(error));
+    }
+];
+
+exports.updateAccount = [
+    check('id').isLength({min:1}).withMessage('Missing account id'),
+    ...accountVerifications,
+    (req, res, next) => {
+        new Promise((resolve, reject) => {
+            const error = validationResult(req);
+            if (!error.isEmpty()) {
+                return next(new MyError(error));
+            }
+            resolve(
+                Account.findByIdAndUpdate(req.body.id, {
+                    updatedDate: Date.now(),
+                    ...req.body
+                }, {new:true}).exec());
+
+        }).then(account => {
+            if (!account) {
+                throw {
+                    status: 404,
+                    message: 'Account not found.'
+                }
+            }
+            res.json({
+                apiStatus: 'success',
+                account
+            })
+        }).catch(error => next(error));
+    }
+];
+
+exports.deleteAccount = [
+    check('id').isLength({min:1}).withMessage('Missing account id'),
+    sanitizeBody("*").trim().escape(),
+    (req, res, next) => {
+        new Promise((resolve, reject) => {
+            const error = validationResult(req);
+            if (!error.isEmpty()) {
+                return next(new MyError(error));
+            }
+            resolve(Account.findByIdAndRemove(req.body.id).exec());
+
+        }).then(account => {
+            if (!account) {
+                throw {
+                    status: 404,
+                    message: 'Account not found.'
+                }
+            }
+            res.json({
+                apiStatus: 'success',
+                account
+            });
 
         }).catch(error => next(error));
     }
